@@ -10,7 +10,10 @@ services:
      - "2181:2181"
   kafka:
     build: ./kafka-docker/
+    image: kafka-docker_kafka
     container_name: kafka
+    depends_on:
+      - zookeeper
     restart: always
     networks:
       - dockerNet
@@ -48,6 +51,8 @@ services:
     build: ./producer_2/.
     image: producer2
     container_name: producer2
+    depends_on:
+      - kafka
     restart: always   
     environment:
       - TOPICNAME=test
@@ -61,20 +66,21 @@ services:
         # Num of cols = 240
     networks:
       - dockerNet
-#  consumer:
-#    build: ./consumer/.
-#    image: consumer
-#    container_name: consumer
-#    restart: always   
-#    environment:
-#      - KAFKAPORT=kafka:9093
-#      - TOPICNAME=test
-#      - ZOOKEEPERPORT=zookeeper:2181 
-#      - CONSUMERGROUP=consumerGroup_1
-#    ports:
-#      - "5001:5001"
-#    networks:
-#      - dockerNet
+  consumer:
+    build: ./consumer/.
+    image: consumer
+    container_name: consumer
+    depends_on:
+      - kafka
+    restart: always   
+    environment:
+      - KAFKAPORT=kafka:9093
+      - TOPICNAME=test
+      - ZOOKEEPERPORT=zookeeper:2181 
+      - CONSUMERGROUP=consumerGroup_1
+    ports:
+      - "5001:5001"
+    networks:
+      - dockerNet
 networks:
   dockerNet:
-    driver: bridge

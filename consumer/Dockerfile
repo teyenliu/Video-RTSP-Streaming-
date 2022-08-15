@@ -1,5 +1,9 @@
 FROM ufoym/deepo:cpu
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ffmpeg libsm6 libxext6
+
 COPY requirements.txt requirements.txt
 
 RUN pip3 install -r requirements.txt
